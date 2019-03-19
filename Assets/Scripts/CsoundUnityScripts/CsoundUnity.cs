@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (C) 2015 Rory Walsh. 
 
 This interface would not have been possible without Richard Henninger's .NET interface to the Csound API. 
@@ -160,17 +160,12 @@ public class CsoundUnity : MonoBehaviour
     */
     public void processBlock(float[] samples, int numChannels)
     {
-
         if (compiledOk)
         {
             for (int i = 0; i < samples.Length; i += numChannels, ksmpsIndex++)
             {
                 for (int channel = 0; channel < numChannels; channel++)
                 {
-                    if (mute == true)
-                        samples[i + channel] = 0.0f;
-                    else
-                    {
                         if ((ksmpsIndex >= ksmps) && (ksmps > 0))
                         {
                             performKsmps();
@@ -179,15 +174,10 @@ public class CsoundUnity : MonoBehaviour
 
                         if (processClipAudio)
                         {
-                            setInputSample(ksmpsIndex * numChannels + channel, samples[i + channel]);
-                            samples[i + channel] = (float)getOutputSample(ksmpsIndex * numChannels + channel);
+                            //setInputSample(ksmpsIndex * numChannels + channel, samples[i + channel]);
                         }
-                        else
-                            samples[i + channel] = (float)(getOutputSample(ksmpsIndex, channel) / zerdbfs);
 
-
-
-                    }
+                        samples[i + channel] = 0.0f;//(float)(getOutputSample(ksmpsIndex, channel) / zerdbfs);
                 }
             }
         }
@@ -212,9 +202,9 @@ public class CsoundUnity : MonoBehaviour
     /**
      * Set a sample in Csound's input buffer
     */
-    public void setInputSample(int pos, double sample)
+    public void setInputSample(int pos, int channel, double sample)
     {
-        csound.setInputSample(pos, sample);
+        csound.setSpinSample(pos, channel, sample);
     }
 
     /**
@@ -225,10 +215,6 @@ public class CsoundUnity : MonoBehaviour
         return csound.getSpoutSample(frame, channel);
     }
 
-    public double getOutputSample(int pos)
-    {
-        return csound.getOutputSample(pos);
-    }
     /**
      * Get 0 dbfs
      */
