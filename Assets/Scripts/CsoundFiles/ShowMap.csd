@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--n -d
+-n -d -m0d -Q3
 </CsOptions>
 <CsInstruments>
 ; Initialize the global variables.
@@ -12,9 +12,12 @@ nchnls = 2
 ; Globals
 giNoteOffset = 36
 giNumButtons = 64
-gSColorFormat = "Color%d"
-gSStatusFormat = "Status%d"
-gSColorChannels[] init giNumButtons
+gSOnColorFormat init "OnColor%d"
+gSOffColorFormat init "OffColor%d"
+gSStatusFormat init "Status%d"
+gSOpCodeChannel init "OpCode"
+gSOnColorChannels[] init giNumButtons
+gSOffColorChannels[] init giNumButtons
 gSStatusChannels[] init giNumButtons
 giOnColors[] init giNumButtons
 giOffColors[] init giNumButtons
@@ -25,28 +28,37 @@ giStatuses[] init giNumButtons
 ; start note addend (add this to index to get note [kdata1] to send)
 ; operation is kInt that tells you to showMap, wipeMap, listenToController, doNothing
 
-iInitIndex = 0
+chn_k gSOpCodeChannel, 3, 1
+indx init 0
 declareMapChannels:
-    gSColorChannels[iInitIndex] sprintf gSColorFormat, iInitIndex
-    gSStatusChannels[iInitIndex] sprintf gSStatusFormat, iInitIndex
-    ;prints "Color channel %s\n", gSColorChannels[iInitIndex]
-    ;prints "Status channel %s\n", gSStatusChannels[iInitIndex]
-    chn_k gSColorChannels[iInitIndex], 1, 1
-    chn_k gSStatusChannels[iInitIndex], 1, 1
-loop_lt iInitIndex, 1, giNumButtons, declareMapChannels
+    gSOnColorChannels[indx] sprintf gSOnColorFormat, indx
+    gSOffColorChannels[indx] sprintf gSOffColorFormat, indx
+    gSStatusChannels[indx] sprintf gSStatusFormat, indx
+    ;prints "Color channel %s\n", gSOnColorChannels[indx]
+    ;prints "Status channel %s\n", gSStatusChannels[indx]
+    chn_k gSOnColorChannels[indx], 3, 1
+    chn_k gSOffColorChannels[indx], 3, 1
+    chn_k gSStatusChannels[indx], 3, 1
+loop_lt indx, 1, giNumButtons, declareMapChannels
+
 
 instr 1
 
 kk = 0
 
-kOpCode chnget "OpCode"
+kOpCode chnget gSOpCodeChannel
+; printks gSOpCodeChannel, 1
 if (kOpCode == 1) then
 
+  chnset 0, gSOpCodeChannel
+
+  printks "UpdateGrid", 1
 	updateGrid:
-    kColor chnget gSColorChannels[kk]
+    kColor chnget gSOffColorChannels[kk]
     kStatus chnget gSStatusChannels[kk]
     midiout kStatus, 1, kColor, kk + giNoteOffset
     loop_lt kk, 1, giNumButtons, updateGrid
+
 
 elseif (kOpCode == 2) then
 
@@ -58,23 +70,6 @@ endin
 
 </CsInstruments>
 <CsScore>
-i1 0 2
+i1 0 z
 </CsScore>
 </CsoundSynthesizer>
-<bsbPanel>
- <label>Widgets</label>
- <objectName/>
- <x>100</x>
- <y>100</y>
- <width>320</width>
- <height>240</height>
- <visible>true</visible>
- <uuid/>
- <bgcolor mode="nobackground">
-  <r>255</r>
-  <g>255</g>
-  <b>255</b>
- </bgcolor>
-</bsbPanel>
-<bsbPresets>
-</bsbPresets>
