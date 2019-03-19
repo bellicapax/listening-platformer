@@ -10,16 +10,15 @@ nchnls = 2
 0dbfs = 1
 
 ; Globals
+giNoteOffset = 36
 giNumButtons = 64
-gkNumButtons = 64
 gSColorFormat = "Color%d"
 gSStatusFormat = "Status%d"
 gSColorChannels[] init giNumButtons
 gSStatusChannels[] init giNumButtons
-gkOnColors[] init giNumButtons
-gkOffColors[] init giNumButtons
-gkStatuses[] init giNumButtons
-gkOpCode init 2
+giOnColors[] init giNumButtons
+giOffColors[] init giNumButtons
+giStatuses[] init giNumButtons
 ; []on colors (kdata2)
 ; []off colors (kdata2)
 ; []last codes (kstatus)
@@ -39,22 +38,19 @@ loop_lt iInitIndex, 1, giNumButtons, declareMapChannels
 instr 1
 
 kk = 0
-ii = 0
 
-if (gkOpCode == 1) then
+kOpCode chnget "OpCode"
+if (kOpCode == 1) then
 
-	prints "Code %d\n", gkOpCode
+	updateGrid:
+    kColor chnget gSColorChannels[kk]
+    kStatus chnget gSStatusChannels[kk]
+    midiout kStatus, 1, kColor, kk + giNoteOffset
+    loop_lt kk, 1, giNumButtons, updateGrid
 
-	sendMap:
-		prints "Color channel %s\n", gSColorChannels[ii] ;this doesn't seem to work with kvalues as the index :/
-    ;kColor chnget gSColorChannels[kk]
-    ;kStatus chnget gSStatusChannels[kk]
+elseif (kOpCode == 2) then
 
-;loop_lt ii, 1, giNumButtons, sendMap
-
-elseif (gkOpCode == 2) then
-
-			printk 1, gkOpCode
+			printks "OpCode%d", 1, kOpCode
 
 endif
 
