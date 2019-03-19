@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--n -d -m0d -Q3
+-n -d -Q3
 </CsOptions>
 <CsInstruments>
 ; Initialize the global variables.
@@ -41,22 +41,29 @@ declareMapChannels:
     chn_k gSStatusChannels[indx], 3, 1
 loop_lt indx, 1, giNumButtons, declareMapChannels
 
+; can't do chnset in global code
 
 instr 1
 
 kk = 0
 
-kOpCode chnget gSOpCodeChannel
-; printks gSOpCodeChannel, 1
+kOpCode = 1
+;kOpCode chnget gSOpCodeChannel
+printks "OpCode%d", 1, kOpCode
+
 if (kOpCode == 1) then
 
   chnset 0, gSOpCodeChannel
 
   printks "UpdateGrid", 1
 	updateGrid:
-    kColor chnget gSOffColorChannels[kk]
-    kStatus chnget gSStatusChannels[kk]
-    midiout kStatus, 1, kColor, kk + giNoteOffset
+		;kStatusChn sprintfk "Status%d", kk
+    ;kColor chnget gSOffColorChannels[kk]
+    ;kStatus chnget gSStatusChannels[kk]
+    ;kStatus chnget kStatusChn
+    kColor = 3
+    kStatus = 144
+    midiout kStatus, 1, kk + giNoteOffset, kColor
     loop_lt kk, 1, giNumButtons, updateGrid
 
 
@@ -70,6 +77,23 @@ endin
 
 </CsInstruments>
 <CsScore>
-i1 0 z
+i1 0 3
 </CsScore>
 </CsoundSynthesizer>
+<bsbPanel>
+ <label>Widgets</label>
+ <objectName/>
+ <x>100</x>
+ <y>100</y>
+ <width>320</width>
+ <height>240</height>
+ <visible>true</visible>
+ <uuid/>
+ <bgcolor mode="nobackground">
+  <r>255</r>
+  <g>255</g>
+  <b>255</b>
+ </bgcolor>
+</bsbPanel>
+<bsbPresets>
+</bsbPresets>
