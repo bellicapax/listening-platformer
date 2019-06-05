@@ -44,8 +44,8 @@ kk = 0
 ;iCode init 1
 ;chnset iCode, gSOpCodeChannel
 
-kOpCode = 1
-;kOpCode chnget gSOpCodeChannel
+;kOpCode = 1
+kOpCode chnget gSOpCodeChannel
 printks "OpCode %d\n", 1, kOpCode
 
 if (kOpCode == 1) then
@@ -72,7 +72,7 @@ endin
 
 </CsInstruments>
 <CsScore>
-i1 0 3
+i1 0 30
 </CsScore>
 </CsoundSynthesizer>
 <bsbPanel>
